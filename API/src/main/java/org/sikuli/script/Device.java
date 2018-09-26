@@ -3,6 +3,7 @@
  */
 package org.sikuli.script;
 
+import java.awt.HeadlessException;
 import java.awt.MouseInfo;
 import java.awt.Point;
 import java.awt.PointerInfo;
@@ -228,13 +229,17 @@ public class Device {
   }
 
   protected Location getLocation() {
-    PointerInfo mp = MouseInfo.getPointerInfo();
-    if (mp != null) {
-      return new Location(MouseInfo.getPointerInfo().getLocation());
-    } else {
-      Debug.error("Mouse: not possible to get mouse position (PointerInfo == null)");
-      return null;
+    try {
+      PointerInfo mp = MouseInfo.getPointerInfo();
+      if (mp != null) {
+        return new Location(mp.getLocation());
+      } else {
+        Debug.error("Mouse: not possible to get mouse position (PointerInfo == null)", new Object[0]);
+      }
+    } catch (HeadlessException e) {
+      Debug.error("Mouse: not possible to get mouse position (Headless exception)", new Object[0]);
     }
+    return null;
   }
 
   private void checkLastPos() throws UnsupportedOperationException {
